@@ -5,9 +5,7 @@ app.use(express.json());
 
 const db = require("./db");
 const bcrypt = require("bcrypt");
-const cors = require("cors");
 
-app.use(cors());
 
 
 app.post("/cliente", async (req, res) => {
@@ -214,3 +212,7 @@ app.get("/cliente/buscar/:nome", async (req, res) => {
         res.status(500).json({ erro: erro.message });
     }
 });
+
+app.listen(port, () => {
+    console.log("API rodando na porta " + port)
+})
