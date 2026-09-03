@@ -1,13 +1,15 @@
+// npm init
+// npm i express
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 3000;
 app.use(express.json());
 
+// npm i mysql2
 const db = require("./db");
+
+// npm i bcrypt
 const bcrypt = require("bcrypt");
-
-
-
 app.post("/cliente", async (req, res) => {
     try {
         const dados = req.body;
@@ -212,6 +214,30 @@ app.get("/cliente/buscar/:nome", async (req, res) => {
         res.status(500).json({ erro: erro.message });
     }
 });
+
+app.post("/login", async (req, res) => {
+    try {
+        const user = req.body
+        const resultado = await db.pool.query(
+            'SELECT email, senha FROM cliente WHERE email = ?',
+            [user.email]
+        )
+        const dados_bd = resultado[0][0]
+
+        if(!dados_bd) {
+            return res.status(401).json({mensagem: "Email ou senha inválido!"})
+        }
+
+        if (user.senha == dados_bd.senha) {
+            return res.status(200).json({mensagem: "Login realizado com sucesso!"})
+        } else {
+            return res.status(401).json({mensagem: "Email ou senha inválido"})
+        }
+
+    } catch (error) {
+        res.status(500).json({erro: error.message})
+    }
+})
 
 app.listen(port, () => {
     console.log("API rodando na porta " + port)
